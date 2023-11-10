@@ -2,10 +2,12 @@
 
 import { reformatDate } from "./helper.js";
 import { delData, getData, postData } from "./service.js";
+import { storage } from "./storage.js";
 
 const report = document.querySelector('.report');
 const financeReport = document.querySelector('.finance__report');
 const reportOperationList = document.querySelector('.report__operation-list');
+const reportTable = document.querySelector('.report__table');
 const reportDates = document.querySelector('.report__dates');
 
 const typesOperation = {
@@ -59,14 +61,40 @@ const delRow = (target) => {
    };
 };
 
+const sortRow = (target) => {
+   const targetSort = target.closest("[data-sort]");
+   if (targetSort && target.dataset.sort === targetSort.dataset.sort) {
+      const sortField = targetSort.dataset.sort;
+      renderReport([...storage.data].sort((a, b) => {
+         if (targetSort.dataset.direct === 'up') {
+            [a, b] = [b, a];
+         }
+         if (sortField === 'amount') {
+            return parseFloat(a[sortField]) < parseFloat(b[sortField]) ? -1 : 1;
+         }
+         return a[sortField] < b[sortField] ? -1 : 1;
+      }));
+      if (targetSort.dataset.direct === 'up') {
+         targetSort.dataset.direct = 'down';
+      } else {
+         targetSort.dataset.direct = 'up';
+      }
+   };
+};
+
 export const reportControl = () => {
-   reportOperationList.addEventListener('click', ({ target }) => {
-      delRow(target);
+   reportOperationList.addEventListener('click', async ({ target }) => {
+      await delRow(target);
+   });
+
+   reportTable.addEventListener('click', ({ target }) => {
+      sortRow(target);
    });
 
    financeReport.addEventListener('click', async () => {
       openReport();
       const data = await getData('/finance');
+      storage.data = data;
       renderReport(data);
    });
 
