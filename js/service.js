@@ -32,3 +32,22 @@ export const postData = async (url, data) => {
       throw error;
    }
 };
+
+export const delData = (url) => {
+   try {
+      const response = fetch(`${API_URL}${url}`, {
+         method: 'DELETE',
+         headers: {
+            "Content-Type": 'application/json'
+         }
+      });
+      if (!response.ok) {
+         throw new Error(`HTTP Error, ${response.status}`);
+      }
+      return response.json();
+   } catch (error) {
+      console.error("Error sending data", error);
+      throw error;
+   }
+};
+

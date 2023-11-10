@@ -1,7 +1,7 @@
 // import {OverlayScrollbars} from './overlayscrollbars.esm.min.css'
 
 import { reformatDate } from "./helper.js";
-import { getData } from "./service.js";
+import { delData, getData, postData } from "./service.js";
 
 const report = document.querySelector('.report');
 const financeReport = document.querySelector('.finance__report');
@@ -34,6 +34,7 @@ const renderReport = (data) => {
    const reportRows = data.map(operation => {
       const reportRow = document.createElement('tr');
       reportRow.className = 'report__row';
+      reportRow.dataset.id = operation.id;
       reportRow.innerHTML = `
          <td class="report__cell">${operation.category}</td>
          <td class="report__cell">${operation.amount.toLocaleString()} ev</td>
@@ -50,9 +51,17 @@ const renderReport = (data) => {
    reportOperationList.append(...reportRows);
 };
 
+const delRow = (target) => {
+   const row = target.closest('.report__row');
+   if (target.dataset.id === row.dataset.id) {
+      row.remove();
+      delData(`/finance/${row.dataset.id}`);
+   };
+};
+
 export const reportControl = () => {
    reportOperationList.addEventListener('click', ({ target }) => {
-      console.log(target)
+      delRow(target);
    });
 
    financeReport.addEventListener('click', async () => {
