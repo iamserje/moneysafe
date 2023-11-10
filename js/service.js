@@ -33,20 +33,17 @@ export const postData = async (url, data) => {
    }
 };
 
-export const delData = (url) => {
+export const delData = async (url) => {
    try {
-      const response = fetch(`${API_URL}${url}`, {
+      const response = await fetch(`${API_URL}${url}`, {
          method: 'DELETE',
-         headers: {
-            "Content-Type": 'application/json'
-         }
       });
       if (!response.ok) {
          throw new Error(`HTTP Error, ${response.status}`);
       }
       return response.json();
    } catch (error) {
-      console.error("Error sending data", error);
+      console.error("Error deleting data", error);
       throw error;
    }
 };
